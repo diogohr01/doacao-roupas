@@ -22,15 +22,20 @@ export default class UserPost extends React.Component {
     event.preventDefault();
     const { name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario } = this.state;
 
+    
+
     try {
-      const url = 'http://127.0.0.1:8000/api/v1/accounts/';
-      const response = await fetch(url, {
+      const config = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Token 06d074d8acee898dc5e4e203efd89487f23bda8a`
         },
         body: JSON.stringify({ name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario })
-      });
+      };
+
+      const url = 'http://127.0.0.1:8001/api/v1/accounts/';
+      const response = await fetch(url, config);
 
       if (!response.ok) {
         const data = await response.json();
