@@ -34,7 +34,7 @@ export default class UserPost extends React.Component {
         body: JSON.stringify({ name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario })
       };
 
-      const url = 'http://127.0.0.1:8001/api/v1/accounts/';
+      const url = 'http://127.0.0.1:8000/api/v1/accounts/';
       const response = await fetch(url, config);
 
       if (!response.ok) {

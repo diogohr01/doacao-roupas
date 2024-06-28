@@ -1,0 +1,179 @@
+/* Global Styles */
+* {
+    
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+  }
+  
+  /* Header Styles */
+  .header {
+    width: 100%;
+    background-color: #ac4d16;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .header nav li {
+    margin: 10px;
+  }
+  
+  .header nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+  }
+  
+  .header nav a:hover {
+    color: #ccc;
+  }
+  
+ /* Footer Styles */
+
+.footer {
+    
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+
+  }
+  
+  /* Container Styles */
+  .container {
+    
+    background-color: #fff;
+    
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Doacao Section Styles */
+  .doacao {
+    
+    margin-bottom: 20px;
+    margin-left: 37%;
+    margin-top: -20px;
+  }
+
+  .doacao h3 {
+    margin-left: 120px;
+  }
+  
+  .doacao form {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .doacao label {
+    margin-bottom: 10px;
+  }
+  
+  .doacao select,
+  .doacao input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .doacao button[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: center;
+  }
+  
+  .doacao button[type="submit"]:hover {
+    background-color: #3e8e41;
+  }
+  
+  /* Pontos de Coleta Section Styles */
+  .pontosColeta {
+    margin-top: 20px;
+  }
+  
+  .pontosColeta ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .pontosColeta li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .pontosColeta li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+      padding: 10px;
+      margin: 20px auto;
+    }
+  
+    .header nav ul {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .header nav li {
+      margin: 5px 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header nav ul {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .header nav li {
+      margin: 5px 0;
+    }
+  
+    .doacao select,
+    .doacao input[type="number"] {
+      padding: 8px;
+    }
+  
+    .doacao button[type="submit"] {
+      padding: 8px 16px;
+    }
+  
+    .pontosColeta li {
+      padding: 8px;
+    }
+  }
+  
