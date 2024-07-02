@@ -6,6 +6,7 @@ import UserLogin from './Login/UserLogin';
 import App from './App';
 import PortalDoador from './portal doador/PortalDoador';
 import PortalBeneficiario from './Portal beneficiario/PortalBeneficiario';
+import Agendamentos from './portal doador/agendamentos/AgendamentosDoador';
 
 const router = createBrowserRouter([
   {path: "/cadastro", element: <UserPost/>},
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   {path: "/Login", element: <UserLogin/>},
   {path: "/doador/:doadorId", element: <PortalDoador /> },
   {path: "/beneficiario/:beneficiarioId", element: <PortalBeneficiario /> },
+  {path: "/agendamentos/:doadorId", element: <Agendamentos/>}
 ])
 
 

@@ -1,0 +1,62 @@
+/* PortalDoador.module.css */
+/* Global Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+  }
+  
+  /* Header Styles */
+  .headerAgendamento {
+    width: 100%;
+    background-color: #ac4d16;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .headerAgendamento nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .headerAgendamento nav li {
+    margin: 10px;
+    cursor: pointer;
+  }
+  
+  .headerAgendamento nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+  }
+  
+  .headerAgendamento nav a:hover {
+    color: #ccc;
+  }
+  
+  /* Footer Styles */
+  .footerAgendamento {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }

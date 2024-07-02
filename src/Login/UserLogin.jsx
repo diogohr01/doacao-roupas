@@ -58,6 +58,8 @@ const UserLogin = () => {
 
       });
 
+      
+
 
       if (response.ok) {
 
@@ -69,14 +71,16 @@ const UserLogin = () => {
 
         setErrors({});
 
-      } else {
+      } 
+      if (!response.ok) {
 
         const data = await response.json();
 
         setErrors(data);
 
-        console.log(data)
+        console.log(data);
 
+        return navigate('/login');
       }
 
 
@@ -90,20 +94,21 @@ const UserLogin = () => {
 
       if (responseBuscar.ok) {
         const users = await responseBuscar.json();
-        const user = users.find(user => user.name === name);
-        const userName = user.name
-        if (user && user.id) { 
-          if (user.is_doador === true) {
-            navigate(`/doador/${user.id}`, { state: { userId: user.id, name: userName } });
-          } else if (user.is_beneficiario === true) {
-            navigate(`/beneficiario/${user.id}`, { state: { userId: user.id, name: userName } });
+        const user = users.find(user => user.name === name); 
+          const userName = user.name
+          if (user && user.id) {
+            if (user.is_doador === true) {
+              navigate(`/doador/${user.id}`, { state: { userId: user.id, name: userName } });
+            } else if (user.is_beneficiario === true) {
+              navigate(`/beneficiario/${user.id}`, { state: { userId: user.id, name: userName } });
+            }
+          } else {
+            setErrors({ detail: 'Usuário não encontrado.' });
           }
-        } else {
-          setErrors({ detail: 'Usuário não encontrado.' });
-        }
+        
       }
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('Erro logando:', error);
       setErrors({ detail: 'Ocorreu um erro ao fazer login. Tente novamente mais tarde.' });
     }
 

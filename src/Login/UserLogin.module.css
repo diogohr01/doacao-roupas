@@ -33,7 +33,8 @@ body, html {
 
 /* Input styling */
 .login-form input[type="text"],
-.login-form input[type="password"] {
+.login-form input[type="password"]
+.login-form input[type="datetime-local"] {
     margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -74,6 +75,11 @@ body, html {
 .login-form button:hover {
     background-color: #45a049;
 }
+.doacao form input[type="datetime-local"] {
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
 
 /* Error message styling */
 .error-message {
