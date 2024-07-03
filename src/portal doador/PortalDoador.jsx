@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './PortalDoador.module.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import InputMask from 'react-input-mask';
 import Notification from './notificação';
-import { useNavigate } from 'react-router-dom';
 
 const PortalDoador = () => {
   const location = useLocation();
-  const userId = location.state.userId;
-  const name = location.state.name;
+  const userId = location.state?.userId || null;
+  const name = location.state?.name || null;
   const [users, setUsers] = useState([]);
-  const [userToUse, setUserToUse] = useState(null); // Alterei para iniciar como null
+  const [userToUse, setUserToUse] = useState(null);
   const [catalog, setCatalog] = useState([]);
   const [optionsTipo, setOptionsTipo] = useState([]);
   const [optionsTamanho, setOptionsTamanho] = useState([]);
@@ -20,7 +19,6 @@ const PortalDoador = () => {
   const [cidade, setCidade] = useState('');
   const [estado, setEstado] = useState('');
   const [cep, setCep] = useState('');
-  const [point, setPoint] = useState({});
   const [dataAgendada, setDataAgendada] = useState('');
   const [donation, setDonation] = useState([]);
   const [message, setMessage] = useState('');
@@ -28,7 +26,6 @@ const PortalDoador = () => {
 
   const navigate = useNavigate();
 
-  
   const Footer = () => {
     return (
       <footer className={styles.footer}>
@@ -40,7 +37,7 @@ const PortalDoador = () => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token 06d074d8acee898dc5e4e203efd89487f23bda8a`
+      'Authorization': `Token cab1c9c2bd96e108f7c3695ea1af98f0abc9a1a9`
     }
   };
 
@@ -57,7 +54,7 @@ const PortalDoador = () => {
   ];
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/v1/accounts/`, config)
+    axios.get('http://localhost:8000/api/v1/accounts/', config)
       .then(response => {
         setUsers(response.data);
       })
@@ -67,7 +64,7 @@ const PortalDoador = () => {
   }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/v1/catalog/`, config)
+    axios.get('http://localhost:8000/api/v1/catalog/', config)
       .then(response => {
         setCatalog(response.data);
 
@@ -110,13 +107,17 @@ const PortalDoador = () => {
 
   const Header = () => {
     const handleNavigateAgendamentos = () => {
-      navigate(`/agendamentos/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
+      if (userToUse) {
+        navigate(`/agendamentos/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
+      } else {
+        console.warn('Usuário não encontrado para navegação.');
+      }
     };
+
     return (
       <header className={styles.header}>
         <nav>
           <ul>
-            <li><a href="#">Home</a></li>
             <li><a onClick={handleNavigateAgendamentos}>Agendamentos</a></li>
             <li><a href="#">Contato</a></li>
           </ul>
@@ -129,8 +130,7 @@ const PortalDoador = () => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     if (name === 'dataAgendada') {
-      const date = new Date(value);
-      setDataAgendada(date.toISOString());
+      setDataAgendada(value);  
     } else {
       switch (name) {
         case 'endereco': setEndereco(value); break;
@@ -157,7 +157,7 @@ const PortalDoador = () => {
     };
 
     try {
-      const responseColeta = await axios.post(`http://localhost:8000/api/v1/point/`, dataColeta, config);
+      const responseColeta = await axios.post('http://localhost:8000/api/v1/point/', dataColeta, config);
       const point = responseColeta.data;
 
       const dataDonation = {
@@ -166,7 +166,7 @@ const PortalDoador = () => {
         data_hora_agendada: dataAgendada,
       };
 
-      const responseDonation = await axios.post(`http://localhost:8000/api/v1/donation/`, dataDonation, config);
+      const responseDonation = await axios.post('http://localhost:8000/api/v1/donation/', dataDonation, config);
       console.log('Doação criada com sucesso:', responseDonation.data);
       setDonation(responseDonation.data);
       setMessage('Doação criada com sucesso! Você pode seguir o andamento da doação pelo agendamento.');
@@ -221,7 +221,14 @@ const PortalDoador = () => {
               ))}
             </select>
             <label>Data do agendamento:</label>
-            <input type="datetime-local" name="dataAgendada" value={dataAgendada} onChange={handleInputChange} />
+            <input
+              type="datetime-local"
+              id="meeting-time"
+              name="dataAgendada"
+              value={dataAgendada}
+              onChange={handleInputChange}
+            />
+
             <label>CEP:</label>
             <InputMask
               mask="99999-999"

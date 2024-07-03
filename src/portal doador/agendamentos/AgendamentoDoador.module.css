@@ -1,62 +1,170 @@
-/* PortalDoador.module.css */
 /* Global Styles */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* Container Style */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.headerAgendamento {
+  width: 100%;
+  background-color: #ac4d16;
+  color: #fff;
+  text-align: center;
+}
+
+.headerAgendamento nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+.headerAgendamento nav li {
+  margin: 10px;
+  cursor: pointer;
+}
+
+.headerAgendamento nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.headerAgendamento nav a:hover {
+  color: #ccc;
+}
+
+.headerAgendamento h1 {
+  margin: 20px 0;
+}
+
+/* Main Content Styles */
+.agendamentosContainer {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.agendamentosContainer h2 {
+  margin-bottom: 20px;
+}
+
+.agendamento {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.agendamentoTitle {
+  font-weight: bold;
+  font-size: 1.2em;
   
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    width: auto;
-    height: auto;
-  }
   
-  /* Header Styles */
-  .headerAgendamento {
-    width: 100%;
-    background-color: #ac4d16;
-    color: #fff;
-    text-align: center;
-  }
+}
+
+.agendamentoStatus {
+  color: #666;
+  margin-top: 5px;
+  background-color: yellow;
+  border-radius: 5px;
+  width: 4.3%;
+  align-items: center;
+  padding: 8px
+}
+
+.agendado {
+  background-color: rgb(221, 218, 35);
+  color: rgb(0, 0, 0);
   
-  .headerAgendamento nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 0;
-    margin: 0;
-  }
+}
+
+.concluido {
+  background-color: rgb(35, 189, 15);
+  color: rgb(0, 0, 0);
   
-  .headerAgendamento nav li {
-    margin: 10px;
-    cursor: pointer;
-  }
   
-  .headerAgendamento nav a {
-    color: #fff;
-    text-decoration: none;
-    padding: 10px;
-  }
+}
+
+.cancelado {
+  background-color: rgb(223, 19, 19);
+  color: rgb(0, 0, 0);
   
-  .headerAgendamento nav a:hover {
-    color: #ccc;
-  }
+}
+
+.endereco {
+  margin-top: 10px;
+  font-size: 1em;
+  color: #333;
+}
+
+/* Footer Styles */
+.footerAgendamento {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  top: 94%;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+}
+
+
+
+.mudancaStatus {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+} 
+
+.botoes {
+  display: flex;
   
-  /* Footer Styles */
-  .footerAgendamento {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-  }
+}
+
+.concluir {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease; 
+  margin-left: 5px;
+  
+}
+
+.cancelar{
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease; 
+}
+
