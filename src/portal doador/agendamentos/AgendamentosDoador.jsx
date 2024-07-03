@@ -103,46 +103,53 @@ const Agendamentos = () => {
     );
   };
   const handleButton = (agendamentoId) => {
-    if (handleButton) {
-      const agendamento = agendamentoUser.find(agendamento => agendamento.id === agendamentoId);
-      if (!agendamento) {
-        console.warn(`Agendamento com ID '${agendamentoId}' não encontrado.`);
-        return;
-      }
+    if (userToUse && pointToUse) {
       const updatedStatus = 'concluido';
-      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { status: updatedStatus }, config)
-        .then(response => {
-          console.log('Status do agendamento atualizado:', response.data.status);
-          setAgendamentoUser(prevAgendamentos =>
-            prevAgendamentos.map(agendamento =>
-              agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
-            )
-          );
-        })
-
+      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { 
+        status: updatedStatus,
+        doador_id: userToUse.id,
+        ponto_coleta_id: pointToUse.id
+      }, config)
+      .then(response => {
+        console.log('Status do agendamento atualizado:', response.data.status);
+        setAgendamentoUser(prevAgendamentos =>
+          prevAgendamentos.map(agendamento =>
+            agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
+          )
+        );
+      })
+      .catch(error => {
+        console.error('Erro ao atualizar status do agendamento:', error);
+      });
+    } else {
+      console.warn('Usuário ou ponto de coleta não definidos para atualização.');
     }
-  }
-
+  };
+  
   const handleButtonCancel = (agendamentoId) => {
-    if (handleButtonCancel) {
-      const agendamento = agendamentoUser.find(agendamento => agendamento.id === agendamentoId);
-      if (!agendamento) {
-        console.warn(`Agendamento com ID '${agendamentoId}' não encontrado.`);
-        return;
-      }
+    if (userToUse && pointToUse) {
       const updatedStatus = 'cancelado';
-      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { status: updatedStatus }, config)
-        .then(response => {
-          console.log('Status do agendamento atualizado:', response.data.status);
-          setAgendamentoUser(prevAgendamentos =>
-            prevAgendamentos.map(agendamento =>
-              agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
-            )
-          );
-        })
-
+      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { 
+        status: updatedStatus,
+        doador_id: userToUse.id,
+        ponto_coleta_id: pointToUse.id
+      }, config)
+      .then(response => {
+        console.log('Status do agendamento atualizado:', response.data.status);
+        setAgendamentoUser(prevAgendamentos =>
+          prevAgendamentos.map(agendamento =>
+            agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
+          )
+        );
+      })
+      .catch(error => {
+        console.error('Erro ao atualizar status do agendamento:', error);
+      });
+    } else {
+      console.warn('Usuário ou ponto de coleta não definidos para atualização.');
     }
-  }
+  };
+  
 
   const FooterAgendamento = () => {
     return (

@@ -110,7 +110,7 @@ const PortalDoador = () => {
       if (userToUse) {
         navigate(`/agendamentos/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
       } else {
-        console.warn('Usuário não encontrado para navegação.');
+        console.warn('Usuário não encontrado para navegação.'); 
       }
     };
 
