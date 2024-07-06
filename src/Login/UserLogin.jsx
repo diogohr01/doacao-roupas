@@ -21,6 +21,10 @@ const UserLogin = () => {
         break; default: break;
     }
   };
+  const handleNavigatePost = () => {
+    navigate('/cadastro');
+  };
+
 
   const togglePasswordVisibility = () => { setShowPassword(!showPassword); };
 
@@ -154,9 +158,10 @@ const UserLogin = () => {
           <button type="submit">Login</button>
 
         </form>
+        
 
       </div>
-
+      <a onClick={handleNavigatePost}>Cadastrar</a>
     </div>
 
   );

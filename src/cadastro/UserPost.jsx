@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from './UserPost.module.css';
+import { useNavigate } from "react-router-dom";
+import Notification from "../portal doador/notificação";
 
-export default class UserPost extends React.Component {
-  state = { 
+const UserPost = () => {
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     senha: '',
@@ -10,19 +12,24 @@ export default class UserPost extends React.Component {
     birthday: '',
     is_doador: false,
     is_beneficiario: false,
-    errors: {} 
-  };
+    errors: {}
+  });
 
-  handleInputChange = (event) => {
+  const [message, setMessage] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
+  const navigate = useNavigate();
+
+  const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
-    this.setState({ [name]: type === 'checkbox' ? checked : value });
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
   };
 
-  handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const { name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario } = this.state;
-
-    
+    const { name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario } = formData;
 
     try {
       const config = {
@@ -39,14 +46,14 @@ export default class UserPost extends React.Component {
 
       if (!response.ok) {
         const data = await response.json();
-        this.setState({ errors: data }); 
+        setFormData({ ...formData, errors: data });
         return;
       }
 
       const data = await response.json();
       console.log('User created:', data);
 
-      this.setState({
+      setFormData({
         name: '',
         email: '',
         senha: '',
@@ -54,91 +61,100 @@ export default class UserPost extends React.Component {
         birthday: '',
         is_doador: false,
         is_beneficiario: false,
-        errors: {} 
+        errors: {}
       });
+
+      setMessage('Doação criada com sucesso! Você pode seguir o andamento da doação pelo agendamento.');
+      setShowNotification(true);
+      navigate('/login')
     } catch (error) {
       console.error('Error creating user:', error);
     }
   };
 
-  render() {
-    const { name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario, errors } = this.state;
+  const handleNotificationClose = () => {
+    setShowNotification(false);
+  };
 
-    return (
-      <div className={styles['post-login']}>
-        <form onSubmit={this.handleSubmit}>
+  const { name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario, errors } = formData;
+
+  return (
+    <div className={styles['post-login']}>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleInputChange}
+          placeholder="Name"
+          required
+        />
+        {errors.name && <p className={styles['error-message']}>{errors.name}</p>}
+
+        <input
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleInputChange}
+          placeholder="Email"
+          required
+        />
+        {errors.email && <p className={styles['error-message']}>{errors.email}</p>}
+
+        <input
+          type="password"
+          name="senha"
+          value={senha}
+          onChange={handleInputChange}
+          placeholder="Senha"
+          required
+        />
+        {errors.senha && <p className={styles['error-message']}>{errors.senha}</p>}
+
+        <input
+          type="password"
+          name="confirm_senha"
+          value={confirm_senha}
+          onChange={handleInputChange}
+          placeholder="Confirmar Senha"
+          required
+        />
+        {errors.confirm_senha && <p className={styles['error-message']}>{errors.confirm_senha}</p>}
+
+        <input
+          type="date"
+          name="birthday"
+          value={birthday}
+          onChange={handleInputChange}
+          placeholder="Birthday"
+        />
+        {errors.birthday && <p className={styles['error-message']}>{errors.birthday}</p>}
+
+        <label>
           <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={this.handleInputChange}
-            placeholder="Name"
-            required
+            type="checkbox"
+            name="is_doador"
+            checked={is_doador}
+            onChange={handleInputChange}
           />
-          {errors.name && <p className={styles['error-message']}>{errors.name}</p>}
-
+          Doador
+        </label>
+        <label>
           <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={this.handleInputChange}
-            placeholder="Email"
-            required
+            type="checkbox"
+            name="is_beneficiario"
+            checked={is_beneficiario}
+            onChange={handleInputChange}
           />
-          {errors.email && <p className={styles['error-message']}>{errors.email}</p>}
+          Beneficiário
+        </label>
+        {errors.non_field_errors && <p className={styles['error-message']}>{errors.non_field_errors}</p>}
+       
+        <button type="submit" className={styles['submit-button']}>Criar usuário</button>
+      </form>
+      {showNotification && <Notification message={message} onClose={handleNotificationClose} />}
+    </div>
+  );
+};
 
-          <input
-            type="password"
-            name="senha"
-            value={senha}
-            onChange={this.handleInputChange}
-            placeholder="Senha"
-            required
-          />
-          {errors.senha && <p className={styles['error-message']}>{errors.senha}</p>}
-
-          <input
-            type="password"
-            name="confirm_senha"
-            value={confirm_senha}
-            onChange={this.handleInputChange}
-            placeholder="Confirmar Senha"
-            required
-          />
-          {errors.confirm_senha && <p className={styles['error-message']}>{errors.confirm_senha}</p>}
-
-          <input
-            type="date"
-            name="birthday"
-            value={birthday}
-            onChange={this.handleInputChange}
-            placeholder="Birthday"
-          />
-          {errors.birthday && <p className={styles['error-message']}>{errors.birthday}</p>}
-
-          <label>
-            <input
-              type="checkbox"
-              name="is_doador"
-              checked={is_doador}
-              onChange={this.handleInputChange}
-            />
-            Doador
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="is_beneficiario"
-              checked={is_beneficiario}
-              onChange={this.handleInputChange}
-            />
-            Beneficiário
-          </label>
-          {errors.non_field_errors && <p className={styles['error-message']}>{errors.non_field_errors}</p>}
-
-          <button type="submit" className={styles['submit-button']}>Criar usuário</button>
-        </form>
-      </div>
-    );
-  }
-}
+export default UserPost;

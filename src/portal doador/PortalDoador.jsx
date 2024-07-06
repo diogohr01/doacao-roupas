@@ -114,12 +114,17 @@ const PortalDoador = () => {
       }
     };
 
+    const handleNavigateLogout = () => {
+      navigate('/login')
+    }
+
     return (
       <header className={styles.header}>
         <nav>
           <ul>
             <li><a onClick={handleNavigateAgendamentos}>Agendamentos</a></li>
             <li><a href="#">Contato</a></li>
+            <li><a onClick={handleNavigateLogout}>Logout</a></li>
           </ul>
         </nav>
         <h1>Portal do Doador</h1>

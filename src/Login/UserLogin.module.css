@@ -12,7 +12,17 @@ body, html {
     align-items: center;
     height: 100vh;
     background-color: #ac4d16;
+    flex-direction: column;
 
+}
+
+a {
+    margin-top: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    border: #ffffff 1px;
 }
 
 /* Form styling */
