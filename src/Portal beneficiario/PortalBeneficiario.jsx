@@ -14,7 +14,7 @@ const PortalBeneficiario = () => {
   const [optionsTipo, setOptionsTipo] = useState([]);
   const [optionsTamanho, setOptionsTamanho] = useState([]);
   const [optionsCondicao, setOptionsCondicao] = useState([]);
-  const [quantities, setQuantities] = useState({});
+  const [cart, setCart] = useState([]);
 
   const config = {
     headers: {
@@ -79,6 +79,27 @@ const PortalBeneficiario = () => {
       });
   }, []);
 
+  const addToCart = (item) => {
+    setCart((prevCart) => {
+      const itemInCart = prevCart.find((cartItem) => cartItem.id === item.id);
+      if (itemInCart) {
+        return prevCart.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantidade: cartItem.quantidade + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantidade: 1 }];
+      }
+    });
+  };
+
+  const removeFromCart = (id) => {
+    setCart((prevCart) =>
+      prevCart.filter((cartItem) => cartItem.id !== id)
+    );
+  };
+
   const Header = () => {
     const handleNavigateAgendamentos = () => {
       if (userToUse) {
@@ -101,18 +122,11 @@ const PortalBeneficiario = () => {
     );
   };
 
-  const handleQuantityChange = (id, value) => {
-    setQuantities(prevQuantities => ({
-      ...prevQuantities,
-      [id]: value
-    }));
-  };
-
   const handleSubmit = () => {
-    const pedido = catalog.map(item => ({
+    const pedido = cart.map((item) => ({
       id: item.id,
-      quantidade: quantities[item.id] || 0
-    })).filter(item => item.quantidade > 0);
+      quantidade: item.quantidade
+    }));
 
     console.log("Pedido:", pedido);
 
@@ -120,6 +134,7 @@ const PortalBeneficiario = () => {
       .then(response => {
         console.log('Pedido enviado com sucesso:', response.data);
         alert('Pedido enviado com sucesso!');
+        setCart([]); // Limpar o carrinho após envio
       })
       .catch(error => {
         console.error('Erro ao enviar pedido:', error);
@@ -134,13 +149,22 @@ const PortalBeneficiario = () => {
       <p>Tamanho: {item.tamanho}</p>
       <p>Condição: {item.condicao}</p>
       <p>Quantidade disponível: {item.quantidade}</p>
-      <input
-        type="number"
-        min="0"
-        placeholder="Quantidade desejada"
-        value={quantities[item.id] || ''}
-        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-      />
+      <button onClick={() => addToCart(item)}>Adicionar ao Carrinho</button>
+      <button onClick={() => removeFromCart(item.id)}>Remover do Carrinho</button>
+    </div>
+  );
+
+  const Cart = () => (
+    <div className={styles.cart}>
+      <h2>Carrinho</h2>
+      {cart.map((item) => (
+        <div key={item.id} className={styles.cartItem}>
+          <h3>{item.nome}</h3>
+          <p>Quantidade: {item.quantidade}</p>
+          <button onClick={() => removeFromCart(item.id)}>Remover</button>
+        </div>
+      ))}
+      <button onClick={handleSubmit} className={styles.submitButton}>Confirmar Doação</button>
     </div>
   );
 
@@ -154,7 +178,7 @@ const PortalBeneficiario = () => {
           <CatalogCard key={item.id} item={item} />
         ))}
       </div>
-      <button onClick={handleSubmit} className={styles.submitButton}>Fazer Pedido</button>
+      <Cart />
     </div>
   );
 };
