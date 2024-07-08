@@ -12,8 +12,7 @@ const Agendamentos = () => {
   const [userToUse, setUserToUse] = useState(null);
   const [agendamentos, setAgendamentos] = useState([]);
   const [agendamentoUser, setAgendamentoUser] = useState([]);
-  const [point, setPoint] = useState([]);
-  const [pointToUse, setPointToUse] = useState(null);
+  const [points, setPoints] = useState([]);
 
   const config = {
     headers: {
@@ -63,23 +62,40 @@ const Agendamentos = () => {
   useEffect(() => {
     axios.get('http://localhost:8000/api/v1/point/', config)
       .then(response => {
-        setPoint(response.data);
+        setPoints(response.data);
       })
       .catch(error => {
         console.error('Erro ao buscar pontos de coleta:', error);
       });
   }, []);
 
-  useEffect(() => {
-    if (point.length > 0 && agendamentoUser.length > 0) {
-      const foundPoint = point.find(p => p.id === agendamentoUser[0].ponto_coleta_id);
-      if (foundPoint) {
-        setPointToUse(foundPoint);
-      } else {
-        console.warn(`Ponto de coleta com o ID '${agendamentoUser[0].ponto_coleta_id}' não encontrado.`);
-      }
+  const getPointDetails = (pointId) => {
+    return points.find(p => p.id === pointId) || {};
+  };
+
+  const handleButton = (agendamentoId, status) => {
+    if (userToUse) {
+      const updatedStatus = status;
+      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { 
+        status: updatedStatus,
+        doador_id: userToUse.id,
+        ponto_coleta_id: getPointDetails(agendamentoId).id
+      }, config)
+      .then(response => {
+        console.log('Status do agendamento atualizado:', response.data.status);
+        setAgendamentoUser(prevAgendamentos =>
+          prevAgendamentos.map(agendamento =>
+            agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
+          )
+        );
+      })
+      .catch(error => {
+        console.error('Erro ao atualizar status do agendamento:', error);
+      });
+    } else {
+      console.warn('Usuário ou ponto de coleta não definidos para atualização.');
     }
-  }, [point, agendamentoUser]);
+  };
 
   const HeaderAgendamento = () => {
     const handleNavigateHome = () => {
@@ -102,54 +118,6 @@ const Agendamentos = () => {
       </header>
     );
   };
-  const handleButton = (agendamentoId) => {
-    if (userToUse && pointToUse) {
-      const updatedStatus = 'concluido';
-      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { 
-        status: updatedStatus,
-        doador_id: userToUse.id,
-        ponto_coleta_id: pointToUse.id
-      }, config)
-      .then(response => {
-        console.log('Status do agendamento atualizado:', response.data.status);
-        setAgendamentoUser(prevAgendamentos =>
-          prevAgendamentos.map(agendamento =>
-            agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
-          )
-        );
-      })
-      .catch(error => {
-        console.error('Erro ao atualizar status do agendamento:', error);
-      });
-    } else {
-      console.warn('Usuário ou ponto de coleta não definidos para atualização.');
-    }
-  };
-  
-  const handleButtonCancel = (agendamentoId) => {
-    if (userToUse && pointToUse) {
-      const updatedStatus = 'cancelado';
-      axios.put(`http://localhost:8000/api/v1/donation/${agendamentoId}/`, { 
-        status: updatedStatus,
-        doador_id: userToUse.id,
-        ponto_coleta_id: pointToUse.id
-      }, config)
-      .then(response => {
-        console.log('Status do agendamento atualizado:', response.data.status);
-        setAgendamentoUser(prevAgendamentos =>
-          prevAgendamentos.map(agendamento =>
-            agendamento.id === agendamentoId ? { ...agendamento, status: updatedStatus } : agendamento
-          )
-        );
-      })
-      .catch(error => {
-        console.error('Erro ao atualizar status do agendamento:', error);
-      });
-    } else {
-      console.warn('Usuário ou ponto de coleta não definidos para atualização.');
-    }
-  };
-  
 
   const FooterAgendamento = () => {
     return (
@@ -158,8 +126,6 @@ const Agendamentos = () => {
       </footer>
     );
   };
-
-
 
   return (
     <div className={styles.container}>
@@ -171,27 +137,26 @@ const Agendamentos = () => {
             <div key={agendamento.id} className={styles.agendamento}>
               <div className={styles.agendamentoTitle}>
                 Agendamento de doação para o dia {agendamento.data_hora_agendada}, nossos fornecedores seguirão com o trabalho de busca!
-
               </div>
-              {pointToUse && (
-                <div className={styles.endereco}>Endereço: {pointToUse.endereco}, {pointToUse.cidade}, {pointToUse.estado} - {pointToUse.cep}</div>
+              {getPointDetails(agendamento.ponto_coleta_id) && (
+                <div className={styles.endereco}>
+                  Endereço: {getPointDetails(agendamento.ponto_coleta_id).endereco}, {getPointDetails(agendamento.ponto_coleta_id).cidade}, {getPointDetails(agendamento.ponto_coleta_id).estado} - {getPointDetails(agendamento.ponto_coleta_id).cep}
+                </div>
               )}
               <div className={styles.mudancaStatus}>
                 <div className={`${styles.agendamentoStatus} ${agendamento.status === 'agendado' ? styles.agendado : ''} 
                               ${agendamento.status === 'concluido' ? styles.concluido : ''} 
                               ${agendamento.status === 'cancelado' ? styles.cancelado : ''}`} id='status'>
                   {agendamento.status}
-                  
                 </div>
                 {(agendamento.status !== 'concluido' && agendamento.status !== 'cancelado') && (
                   <div className={styles.botoes}>
-                    <div className={styles.cancelar} onClick={() => handleButtonCancel(agendamento.id)}><div>Cancelar</div></div>
-                    <div className={styles.concluir} onClick={() => handleButton(agendamento.id)}><div>Concluir</div></div>
+                    <div className={styles.cancelar} onClick={() => handleButton(agendamento.id, 'cancelado')}><div>Cancelar</div></div>
+                    <div className={styles.concluir} onClick={() => handleButton(agendamento.id, 'concluido')}><div>Concluir</div></div>
                   </div>
                 )}
               </div>
             </div>
-
           ))
         ) : (
           <p>Nenhum agendamento encontrado.</p>

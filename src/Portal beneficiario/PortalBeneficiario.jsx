@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from './PortalBeneficiario.module.css'; // Supondo que você tenha um arquivo CSS para estilos
+import styles from './PortalBeneficiario.module.css';
 
 const PortalBeneficiario = () => {
   const location = useLocation();
@@ -14,7 +14,7 @@ const PortalBeneficiario = () => {
   const [optionsTipo, setOptionsTipo] = useState([]);
   const [optionsTamanho, setOptionsTamanho] = useState([]);
   const [optionsCondicao, setOptionsCondicao] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [quantidades, setQuantidades] = useState({});
 
   const config = {
     headers: {
@@ -79,62 +79,29 @@ const PortalBeneficiario = () => {
       });
   }, []);
 
-  const addToCart = (item) => {
-    setCart((prevCart) => {
-      const itemInCart = prevCart.find((cartItem) => cartItem.id === item.id);
-      if (itemInCart) {
-        return prevCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantidade: cartItem.quantidade + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { ...item, quantidade: 1 }];
-      }
-    });
-  };
-
-  const removeFromCart = (id) => {
-    setCart((prevCart) =>
-      prevCart.filter((cartItem) => cartItem.id !== id)
-    );
-  };
-
-  const Header = () => {
-    const handleNavigateAgendamentos = () => {
-      if (userToUse) {
-        navigate(`/agendamentos/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
-      } else {
-        console.warn('Usuário não encontrado para navegação.');
-      }
-    };
-
-    return (
-      <header className={styles.header}>
-        <nav>
-          <ul>
-            <li><a onClick={handleNavigateAgendamentos}>Agendamentos</a></li>
-            <li><a href="#">Contato</a></li>
-          </ul>
-        </nav>
-        <h1>Portal do Doador</h1>
-      </header>
-    );
+  const handleQuantidadeChange = (itemId, value) => {
+    setQuantidades(prevQuantidades => ({
+      ...prevQuantidades,
+      [itemId]: value
+    }));
   };
 
   const handleSubmit = () => {
-    const pedido = cart.map((item) => ({
+    const pedido = catalog.map(item => ({
       id: item.id,
-      quantidade: item.quantidade
-    }));
+      quantidade: quantidades[item.id] || 0
+    })).filter(item => item.quantidade > 0);
 
-    console.log("Pedido:", pedido);
+    if (pedido.length === 0) {
+      alert('Nenhum item selecionado.');
+      return;
+    }
 
     axios.post('http://localhost:8000/api/v1/pedidos/', { pedido, userId }, config)
       .then(response => {
         console.log('Pedido enviado com sucesso:', response.data);
         alert('Pedido enviado com sucesso!');
-        setCart([]); // Limpar o carrinho após envio
+        updateCatalogQuantities(pedido);
       })
       .catch(error => {
         console.error('Erro ao enviar pedido:', error);
@@ -142,35 +109,60 @@ const PortalBeneficiario = () => {
       });
   };
 
-  const CatalogCard = ({ item }) => (
-    <div className={styles.card}>
-      <h3>{item.nome}</h3>
-      <p>Tipo: {item.tipo}</p>
-      <p>Tamanho: {item.tamanho}</p>
-      <p>Condição: {item.condicao}</p>
-      <p>Quantidade disponível: {item.quantidade}</p>
-      <button onClick={() => addToCart(item)}>Adicionar ao Carrinho</button>
-      <button onClick={() => removeFromCart(item.id)}>Remover do Carrinho</button>
-    </div>
-  );
+  const updateCatalogQuantities = (pedido) => {
+    const updatedCatalog = catalog.map((catalogItem) => {
+      const itemInPedido = pedido.find((item) => item.id === catalogItem.id);
+      if (itemInPedido) {
+        return { ...catalogItem, quantidade: catalogItem.quantidade - itemInPedido.quantidade };
+      }
+      return catalogItem;
+    });
 
-  const Cart = () => (
-    <div className={styles.cart}>
-      <h2>Carrinho</h2>
-      {cart.map((item) => (
-        <div key={item.id} className={styles.cartItem}>
-          <h3>{item.nome}</h3>
-          <p>Quantidade: {item.quantidade}</p>
-          <button onClick={() => removeFromCart(item.id)}>Remover</button>
-        </div>
-      ))}
-      <button onClick={handleSubmit} className={styles.submitButton}>Confirmar Doação</button>
-    </div>
-  );
+    setCatalog(updatedCatalog);
+
+    // Atualizar quantidades no backend
+    pedido.forEach(item => {
+      const updatedQuantity = catalog.find(catalogItem => catalogItem.id === item.id).quantidade - item.quantidade;
+      axios.patch(`http://localhost:8000/api/v1/catalog/${item.id}/`, { quantidade: updatedQuantity }, config)
+        .then(response => {
+          console.log('Quantidade atualizada no backend:', response.data);
+        })
+        .catch(error => {
+          console.error('Erro ao atualizar quantidade no catálogo:', error);
+        });
+    });
+  };
+
+  const CatalogCard = ({ item }) => {
+    return (
+      <div className={styles.card}>
+        <h3>{item.nome}</h3>
+        <p>Tipo: {item.tipo}</p>
+        <p>Tamanho: {item.tamanho}</p>
+        <p>Condição: {item.condicao}</p>
+        <p>Quantidade disponível: {item.quantidade}</p>
+        <input
+          type="number"
+          min="1"
+          max={item.quantidade}
+          value={quantidades[item.id] || ''}
+          onChange={(e) => handleQuantidadeChange(item.id, parseInt(e.target.value, 10))}
+        />
+      </div>
+    );
+  };
 
   return (
     <div>
-      <Header />
+      <header className={styles.header}>
+        <nav>
+          <ul>
+            <li><a onClick={() => navigate(`/agendamentos/${userId}`, { state: { userId: userToUse?.id, name: userToUse?.name } })}>Agendamentos</a></li>
+            <li><a href="#">Contato</a></li>
+          </ul>
+        </nav>
+        <h1>Portal do Doador</h1>
+      </header>
       <h1>ID do usuário logado: {userId}</h1>
       <h1>Nome do Usuário: {name}</h1>
       <div className={styles.catalogContainer}>
@@ -178,7 +170,7 @@ const PortalBeneficiario = () => {
           <CatalogCard key={item.id} item={item} />
         ))}
       </div>
-      <Cart />
+      <button onClick={handleSubmit} className={styles.submitButton}>Confirmar Doação</button>
     </div>
   );
 };

@@ -20,6 +20,10 @@ const PortalDoador = () => {
   const [estado, setEstado] = useState('');
   const [cep, setCep] = useState('');
   const [dataAgendada, setDataAgendada] = useState('');
+  const [tipoRoupa, setTipoRoupa] = useState('');
+  const [tamanhoRoupa, setTamanhoRoupa] = useState('');
+  const [condicaoRoupa, setCondicaoRoupa] = useState('');
+  const [quantidadeRoupa, setQuantidadeRoupa] = useState('');
   const [donation, setDonation] = useState([]);
   const [message, setMessage] = useState('');
   const [showNotification, setShowNotification] = useState(false);
@@ -115,7 +119,7 @@ const PortalDoador = () => {
     };
 
     const handleNavigateLogout = () => {
-      navigate('/login')
+      navigate('/login');
     }
 
     return (
@@ -134,16 +138,36 @@ const PortalDoador = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'dataAgendada') {
-      setDataAgendada(value);  
-    } else {
-      switch (name) {
-        case 'endereco': setEndereco(value); break;
-        case 'cidade': setCidade(value); break;
-        case 'estado': setEstado(value); break;
-        case 'cep': setCep(value); break;
-        default: break;
-      }
+    switch (name) {
+      case 'dataAgendada':
+        setDataAgendada(value);
+        break;
+      case 'endereco':
+        setEndereco(value);
+        break;
+      case 'cidade':
+        setCidade(value);
+        break;
+      case 'estado':
+        setEstado(value);
+        break;
+      case 'cep':
+        setCep(value);
+        break;
+      case 'tipoRoupa':
+        setTipoRoupa(value);
+        break;
+      case 'tamanhoRoupa':
+        setTamanhoRoupa(value);
+        break;
+      case 'condicaoRoupa':
+        setCondicaoRoupa(value);
+        break;
+      case 'quantidadeRoupa':
+        setQuantidadeRoupa(value);
+        break;
+      default:
+        break;
     }
   };
 
@@ -154,14 +178,24 @@ const PortalDoador = () => {
       return;
     }
 
-    const dataColeta = {
-      endereco,
-      cidade,
-      estado,
-      cep,
+    const dataCatalog = {
+      tipo: tipoRoupa,
+      tamanho: tamanhoRoupa,
+      condicao: condicaoRoupa,
+      quantidade: quantidadeRoupa,
     };
 
     try {
+      const responseCatalog = await axios.post('http://localhost:8000/api/v1/catalog/', dataCatalog, config);
+      const catalogItem = responseCatalog.data;
+
+      const dataColeta = {
+        endereco,
+        cidade,
+        estado,
+        cep,
+      };
+
       const responseColeta = await axios.post('http://localhost:8000/api/v1/point/', dataColeta, config);
       const point = responseColeta.data;
 
@@ -169,6 +203,7 @@ const PortalDoador = () => {
         doador_id: userToUse.id,
         ponto_coleta_id: point.id,
         data_hora_agendada: dataAgendada,
+        catalog_item_id: catalogItem.id
       };
 
       const responseDonation = await axios.post('http://localhost:8000/api/v1/donation/', dataDonation, config);
@@ -195,25 +230,25 @@ const PortalDoador = () => {
           <h3>Faça uma doação de roupas</h3>
           <form onSubmit={handleSubmit}>
             <label>Selecione o tipo de roupa:</label>
-            <select>
+            <select name="tipoRoupa" value={tipoRoupa} onChange={handleInputChange}>
               {optionsTipo.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
             <label>Tamanho da roupa(s):</label>
-            <select>
+            <select name="tamanhoRoupa" value={tamanhoRoupa} onChange={handleInputChange}>
               {optionsTamanho.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
             <label>Condição da roupa(s):</label>
-            <select>
+            <select name="condicaoRoupa" value={condicaoRoupa} onChange={handleInputChange}>
               {optionsCondicao.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
             <label>Quantidade de roupa(s)</label>
-            <input type="number" />
+            <input type="number" name="quantidadeRoupa" value={quantidadeRoupa} onChange={handleInputChange} />
             <label>Endereço para coleta:</label>
             <input type="text" name="endereco" placeholder="Rua, número, bairro" value={endereco} onChange={handleInputChange} />
             <label>Cidade:</label>
