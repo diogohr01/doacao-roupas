@@ -11,10 +11,7 @@ const PortalBeneficiario = () => {
   const [catalog, setCatalog] = useState([]);
   const [users, setUsers] = useState([]);
   const [userToUse, setUserToUse] = useState(null);
-  const [optionsTipo, setOptionsTipo] = useState([]);
-  const [optionsTamanho, setOptionsTamanho] = useState([]);
-  const [optionsCondicao, setOptionsCondicao] = useState([]);
-  const [quantidades, setQuantidades] = useState({});
+  const [quantidades, setQuantidades] = useState({}); // Estado para quantidades individuais
 
   const config = {
     headers: {
@@ -44,35 +41,16 @@ const PortalBeneficiario = () => {
     }
   }, [users, name]);
 
-  const getUniqueValues = (array, key) => {
-    return [...new Set(array.map(item => item[key]))];
-  };
-
   useEffect(() => {
     axios.get('http://localhost:8000/api/v1/catalog/', config)
       .then(response => {
         setCatalog(response.data);
-
-        const uniqueTipos = getUniqueValues(response.data, 'tipo');
-        const uniqueTamanhos = getUniqueValues(response.data, 'tamanho');
-        const uniqueCondicoes = getUniqueValues(response.data, 'condicao');
-
-        const optionsTipo = uniqueTipos.map(value => ({
-          value: value,
-          label: value
-        }));
-        const optionsTamanho = uniqueTamanhos.map(value => ({
-          value: value,
-          label: value
-        }));
-        const optionsCondicao = uniqueCondicoes.map(value => ({
-          value: value,
-          label: value
-        }));
-
-        setOptionsTipo(optionsTipo);
-        setOptionsTamanho(optionsTamanho);
-        setOptionsCondicao(optionsCondicao);
+        // Inicializar quantidades para cada item no catálogo
+        const initialQuantities = {};
+        response.data.forEach(item => {
+          initialQuantities[item.id] = 0; // Quantidade inicial de cada item é zero
+        });
+        setQuantidades(initialQuantities);
       })
       .catch(error => {
         console.error('Erro ao buscar as roupas:', error);
@@ -80,24 +58,36 @@ const PortalBeneficiario = () => {
   }, []);
 
   const handleQuantidadeChange = (itemId, value) => {
-    setQuantidades(prevQuantidades => ({
-      ...prevQuantidades,
-      [itemId]: value
-    }));
+    const parsedValue = parseInt(value, 10); // Converter o valor para um número inteiro
+    
+    // Verificar se o valor é um número válido maior ou igual a zero
+    if (!isNaN(parsedValue) && parsedValue >= 0) {
+      // Atualizar o estado quantidades com a nova quantidade para o item específico
+      setQuantidades((prevQuantidades) => ({
+        ...prevQuantidades,
+        [itemId]: parsedValue, // Update the quantity for this specific item
+      }));
+    } else {
+      // Se o valor não for válido, definir a quantidade como zero
+      setQuantidades((prevQuantidades) => ({
+        ...prevQuantidades,
+        [itemId]: 0, // Reset the quantity for this specific item
+      }));
+    }
   };
-
+  
   const handleSubmit = () => {
-    const pedido = catalog.map(item => ({
-      id: item.id,
-      quantidade: quantidades[item.id] || 0
-    })).filter(item => item.quantidade > 0);
+    const pedido = catalog.map((item) => {
+      const quantity = document.querySelector(`input[name="quantidade-${item.id}"]`).value;
+      return { id: item.id, quantidade: parseInt(quantity, 10) };
+    });
 
     if (pedido.length === 0) {
       alert('Nenhum item selecionado.');
       return;
     }
 
-    axios.post('http://localhost:8000/api/v1/pedidos/', { pedido, userId }, config)
+    axios.post('http://localhost:8000/api/v1/donation/', { pedido, userId }, config)
       .then(response => {
         console.log('Pedido enviado com sucesso:', response.data);
         alert('Pedido enviado com sucesso!');
@@ -110,22 +100,22 @@ const PortalBeneficiario = () => {
   };
 
   const updateCatalogQuantities = (pedido) => {
-    const updatedCatalog = catalog.map((catalogItem) => {
-      const itemInPedido = pedido.find((item) => item.id === catalogItem.id);
-      if (itemInPedido) {
-        return { ...catalogItem, quantidade: catalogItem.quantidade - itemInPedido.quantidade };
-      }
-      return catalogItem;
-    });
-
-    setCatalog(updatedCatalog);
-
-    // Atualizar quantidades no backend
     pedido.forEach(item => {
       const updatedQuantity = catalog.find(catalogItem => catalogItem.id === item.id).quantidade - item.quantidade;
       axios.patch(`http://localhost:8000/api/v1/catalog/${item.id}/`, { quantidade: updatedQuantity }, config)
         .then(response => {
           console.log('Quantidade atualizada no backend:', response.data);
+          
+          // Atualizar localmente o estado do catálogo após confirmação do backend
+          setCatalog(prevCatalog => prevCatalog.map(catalogItem => {
+            if (catalogItem.id === item.id) {
+              return {
+                ...catalogItem,
+                quantidade: updatedQuantity
+              };
+            }
+            return catalogItem;
+          }));
         })
         .catch(error => {
           console.error('Erro ao atualizar quantidade no catálogo:', error);
@@ -134,6 +124,17 @@ const PortalBeneficiario = () => {
   };
 
   const CatalogCard = ({ item }) => {
+    const [quantity,setQuantity] = useState(0); // Add a local state for each item's quantity
+
+    const handleQuantityChange = (e) => {
+      const value = parseInt(e.target.value, 10);
+      if (!isNaN(value) && value >= 0) {
+        setQuantity(value);
+      } else {
+        setQuantity(0);
+      }
+    };
+
     return (
       <div className={styles.card}>
         <h3>{item.nome}</h3>
@@ -143,10 +144,12 @@ const PortalBeneficiario = () => {
         <p>Quantidade disponível: {item.quantidade}</p>
         <input
           type="number"
-          min="1"
-          max={item.quantidade}
-          value={quantidades[item.id] || ''}
-          onChange={(e) => handleQuantidadeChange(item.id, parseInt(e.target.value, 10))}
+          name={`quantidade-${item.id}`} // Nome único para cada input
+          min="0"
+          max={item.quantidade} // Limite máximo baseado na quantidade disponível
+          value={quantity}
+          onChange={handleQuantityChange}
+          onKeyDown={(e) => e.preventDefault()} // Impedir redirecionamento
         />
       </div>
     );
@@ -161,7 +164,7 @@ const PortalBeneficiario = () => {
             <li><a href="#">Contato</a></li>
           </ul>
         </nav>
-        <h1>Portal do Doador</h1>
+        <h1>Portal do Beneficiário</h1>
       </header>
       <h1>ID do usuário logado: {userId}</h1>
       <h1>Nome do Usuário: {name}</h1>
