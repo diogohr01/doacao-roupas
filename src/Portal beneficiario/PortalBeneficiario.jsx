@@ -162,6 +162,7 @@ const PortalBeneficiario = () => {
           <ul>
             <li><a onClick={() => navigate(`/agendamentos/${userId}`, { state: { userId: userToUse?.id, name: userToUse?.name } })}>Agendamentos</a></li>
             <li><a onClick={() => navigate(`/Contato/${userId}`, { state: { userId: userToUse?.id, name: userToUse?.name } })}>Contato</a></li>
+            
           </ul>
         </nav>
         <h1>Portal do Beneficiário</h1>

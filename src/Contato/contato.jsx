@@ -30,16 +30,43 @@ const Contato = () => {
     }
   };
 
+  const handleReturn = () => {
+    navigate('/beneficiario'); // Navega para a página de contato
+  };
+
   return (
     <div className={styles.feedbackForm}>
+      <button onClick={handleReturn}>Retornar</button>
       <h2>Deixe seu Feedback</h2>
       <p>Sobre nós</p>
-      <h3>Nossa missão neste momento dificil é ajudar a quem mais precisa, se você foi uma dessas pessoas deixe seu feedback aqui adorariamos ouvir o que você tem a contar!</h3>
+      <h3>
+        Nossa missão neste momento dificil é ajudar a quem mais precisa, se você foi uma dessas pessoas deixe seu feedback aqui adorariamos ouvir o que você tem a contar!
+      </h3>
       <form onSubmit={handleSubmit}>
+        <label>
+          Nome:
+          <input
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </label>
+        <br />
+        <label>
+          Email:
+          <input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </label>
         <br />
         <label>
           Enter your feedback here:
-          <textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} />
+          <textarea
+            value={feedback}
+            onChange={(event) => setFeedback(event.target.value)}
+          />
         </label>
         <br />
         <button type="submit">Enviar</button>
