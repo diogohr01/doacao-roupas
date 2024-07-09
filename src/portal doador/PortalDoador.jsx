@@ -203,7 +203,6 @@ const PortalDoador = () => {
         doador_id: userToUse.id,
         ponto_coleta_id: point.id,
         data_hora_agendada: dataAgendada,
-        catalog_item_id: catalogItem.id
       };
 
       const responseDonation = await axios.post('http://localhost:8000/api/v1/donation/', dataDonation, config);
@@ -215,7 +214,7 @@ const PortalDoador = () => {
       setMessage('Erro ao criar doação');
       setShowNotification(true);
     }
-  };
+  };  
 
   const handleNotificationClose = () => {
     setShowNotification(false);

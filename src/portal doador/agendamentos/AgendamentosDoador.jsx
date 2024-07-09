@@ -99,8 +99,10 @@ const Agendamentos = () => {
 
   const HeaderAgendamento = () => {
     const handleNavigateHome = () => {
-      if (userToUse) {
+      if (userToUse?.is_doador) {
         navigate(`/doador/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
+      } else if (userToUse?.is_beneficiario) {
+        navigate(`/beneficiario/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } });
       } else {
         console.warn('Usuário não encontrado para navegação.');
       }
@@ -114,7 +116,7 @@ const Agendamentos = () => {
             <li><a href="#">Contato</a></li>
           </ul>
         </nav>
-        <h1>Portal do Doador</h1>
+        <h1>Lista de agendamentos</h1>
       </header>
     );
   };
@@ -135,9 +137,17 @@ const Agendamentos = () => {
         {agendamentoUser && agendamentoUser.length > 0 ? (
           agendamentoUser.map(agendamento => (
             <div key={agendamento.id} className={styles.agendamento}>
-              <div className={styles.agendamentoTitle}>
-                Agendamento de doação para o dia {agendamento.data_hora_agendada}, nossos fornecedores seguirão com o trabalho de busca!
-              </div>
+              {userToUse?.is_doador && (
+                <div className={styles.agendamentoTitle}>
+                  Agendamento de doação para o dia {agendamento.data_hora_agendada}, nossos fornecedores seguirão com o trabalho de busca!
+                </div>
+              )}
+              {userToUse?.is_beneficiario && (
+                <div className={styles.agendamentoTitle}>
+                  Agendamento de pedido para o dia {agendamento.data_hora_agendada}, nossos fornecedores seguirão com o trabalho de entrega!
+                </div>
+              )}
+              
               {getPointDetails(agendamento.ponto_coleta_id) && (
                 <div className={styles.endereco}>
                   Endereço: {getPointDetails(agendamento.ponto_coleta_id).endereco}, {getPointDetails(agendamento.ponto_coleta_id).cidade}, {getPointDetails(agendamento.ponto_coleta_id).estado} - {getPointDetails(agendamento.ponto_coleta_id).cep}
