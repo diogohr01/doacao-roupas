@@ -1,0 +1,77 @@
+/* contato.module.css */
+
+.feedbackForm {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .feedbackForm h2 {
+    margin-top: 0;
+    color: #333;
+  }
+  
+  .feedbackForm p {
+    margin-bottom: 20px;
+  }
+  
+  .feedbackForm h3 {
+    margin-bottom: 20px;
+    font-weight: normal;
+    color: #666;
+  }
+  
+  .feedbackForm form {
+    margin-top: 20px;
+    
+  
+  }
+  
+  .feedbackForm label {
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 20px;
+  }
+  
+  .feedbackForm textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+   
+  }
+  
+  .feedbackForm button[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .feedbackForm button[type="submit"]:hover {
+    background-color: #3e8e41;
+  }
+  
+  .feedbackForm button[type="button"] {
+    background-color: #aaa;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .feedbackForm button[type="button"]:hover {
+    background-color: #888;
+  }
