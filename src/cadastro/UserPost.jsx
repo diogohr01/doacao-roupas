@@ -36,7 +36,7 @@ const UserPost = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token cab1c9c2bd96e108f7c3695ea1af98f0abc9a1a9`
+          'Authorization': `Token c867237febd767a365d6ccea936b549944ef9548`
         },
         body: JSON.stringify({ name, email, senha, confirm_senha, birthday, is_doador, is_beneficiario })
       };
@@ -152,6 +152,7 @@ const UserPost = () => {
        
         <button type="submit" className={styles['submit-button']}>Criar usuário</button>
       </form>
+      <a onClick= {() => navigate('/login')}>Login</a>
       {showNotification && <Notification message={message} onClose={handleNotificationClose} />}
     </div>
   );

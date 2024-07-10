@@ -80,7 +80,7 @@ body {
   width: 500px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .doacao label {
@@ -113,12 +113,19 @@ body {
   border-radius: 5px;
   cursor: pointer;
   align-self: center;
+  margin-top: 10px;
 }
 
 .doacao button[type="submit"]:hover {
   background-color: #3e8e41;
 }
 
+.inputMask {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: calc(100% - 18px); /* Ajuste conforme necessário */
+}
 /* Pontos de Coleta Section Styles */
 .pontosColeta {
   margin-top: 20px;

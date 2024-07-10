@@ -41,7 +41,7 @@ const PortalDoador = () => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token cab1c9c2bd96e108f7c3695ea1af98f0abc9a1a9`
+      'Authorization': `Token c867237febd767a365d6ccea936b549944ef9548`
     }
   };
 
@@ -127,7 +127,9 @@ const PortalDoador = () => {
         <nav>
           <ul>
             <li><a onClick={handleNavigateAgendamentos}>Agendamentos</a></li>
-            <li><a href="#">Contato</a></li>
+            <li><a onClick={() => navigate(`/Contato/${userId}`, { state: { userId: userToUse?.id, name: userToUse?.name } })}>
+                Contato
+              </a></li>
             <li><a onClick={handleNavigateLogout}>Logout</a></li>
           </ul>
         </nav>
@@ -198,11 +200,11 @@ const PortalDoador = () => {
 
       const responseColeta = await axios.post('http://localhost:8000/api/v1/point/', dataColeta, config);
       const point = responseColeta.data;
-
+      const formattedDate = dataAgendada.replace('T', ' ');
       const dataDonation = {
         doador_id: userToUse.id,
         ponto_coleta_id: point.id,
-        data_hora_agendada: dataAgendada,
+        data_hora_agendada: formattedDate,
       };
 
       const responseDonation = await axios.post('http://localhost:8000/api/v1/donation/', dataDonation, config);
@@ -236,52 +238,72 @@ const PortalDoador = () => {
             </select>
             <label>Tamanho da roupa(s):</label>
             <select name="tamanhoRoupa" value={tamanhoRoupa} onChange={handleInputChange}>
+              
               {optionsTamanho.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
-            <label>Condição da roupa(s):</label>
+            <label>Condição da roupa:</label>
             <select name="condicaoRoupa" value={condicaoRoupa} onChange={handleInputChange}>
+             
               {optionsCondicao.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
-            <label>Quantidade de roupa(s)</label>
-            <input type="number" name="quantidadeRoupa" value={quantidadeRoupa} onChange={handleInputChange} />
-            <label>Endereço para coleta:</label>
-            <input type="text" name="endereco" placeholder="Rua, número, bairro" value={endereco} onChange={handleInputChange} />
-            <label>Cidade:</label>
-            <input type="text" name="cidade" value={cidade} onChange={handleInputChange} />
-            <label>Estado:</label>
-            <select name="estado" value={estado} onChange={handleInputChange}>
-              <option value="">Selecione o estado</option>
-              {estados.map(estado => (
-                <option key={estado} value={estado}>{estado}</option>
-              ))}
-            </select>
-            <label>Data do agendamento:</label>
+            <label>Quantidade:</label>
+            <input
+              type="number"
+              name="quantidadeRoupa"
+              value={quantidadeRoupa}
+              onChange={handleInputChange}
+            />
+            <h3>Agende a data da coleta</h3>
+            <label>Data e Hora Agendada:</label>
             <input
               type="datetime-local"
-              id="meeting-time"
               name="dataAgendada"
               value={dataAgendada}
               onChange={handleInputChange}
             />
-
+            <label>Endereço:</label>
+            <input
+              type="text"
+              name="endereco"
+              value={endereco}
+              onChange={handleInputChange}
+            />
+            <label>Cidade:</label>
+            <input
+              type="text"
+              name="cidade"
+              value={cidade}
+              onChange={handleInputChange}
+            />
+            <label>Estado:</label>
+            <select
+              name="estado"
+              value={estado}
+              onChange={handleInputChange}
+            >
+              <option value="">Selecione o Estado</option>
+              {estados.map(estado => (
+                <option key={estado} value={estado}>{estado}</option>
+              ))}
+            </select>
             <label>CEP:</label>
             <InputMask
               mask="99999-999"
+              name="cep"
               value={cep}
               onChange={handleInputChange}
-            >
-              {(inputProps) => <input {...inputProps} type="text" name="cep" />}
-            </InputMask>
-            <button type="submit">Doar</button>
+              className={styles.inputMask}
+            />
+            <button type="submit">Agendar</button>
           </form>
         </section>
-        {showNotification && <Notification message={message} onClose={handleNotificationClose} />}
       </main>
       <Footer />
+      {showNotification && <Notification message={message} onClose={handleNotificationClose} />}
     </div>
   );
 };

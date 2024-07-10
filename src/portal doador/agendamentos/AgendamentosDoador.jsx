@@ -17,7 +17,7 @@ const Agendamentos = () => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token cab1c9c2bd96e108f7c3695ea1af98f0abc9a1a9`
+      'Authorization': `Token c867237febd767a365d6ccea936b549944ef9548`
     }
   };
 
@@ -113,7 +113,7 @@ const Agendamentos = () => {
         <nav>
           <ul>
             <li><a onClick={handleNavigateHome}>Home</a></li>
-            <li><a href="#">Contato</a></li>
+            <li><a onClick={() => navigate(`/Contato/${userId}`, { state: { userId: userToUse.id, name: userToUse.name } })}>Contato</a></li>
           </ul>
         </nav>
         <h1>Lista de agendamentos</h1>

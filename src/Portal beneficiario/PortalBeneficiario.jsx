@@ -43,7 +43,7 @@ const PortalBeneficiario = () => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token cab1c9c2bd96e108f7c3695ea1af98f0abc9a1a9`
+      'Authorization': `Token c867237febd767a365d6ccea936b549944ef9548`
     }
   };
   
@@ -140,7 +140,7 @@ const PortalBeneficiario = () => {
       estado,
       cep,
     };
-  
+    const formattedDate = dataAgendada.replace('T', ' ');
     axios.post('http://localhost:8000/api/v1/point/', dataColeta, config)
       .then(response => {
         setPoint(response.data);
@@ -150,7 +150,7 @@ const PortalBeneficiario = () => {
           const dataDonation = {
             doador_id: userToUse.id,
             ponto_coleta_id: response.data.id,
-            data_hora_agendada: dataAgendada,
+            data_hora_agendada: formattedDate,
             catalog: item.id,
             quantidade: item.quantidade,
           };
@@ -203,7 +203,7 @@ const PortalBeneficiario = () => {
             <li>
               <a onClick={() => navigate(`/Contato/${userId}`, { state: { userId: userToUse?.id, name: userToUse?.name } })}>
                 Contato
-              </a>
+              </a>  
             </li>
             <li>
               <a onClick={() => navigate('/login')}>
